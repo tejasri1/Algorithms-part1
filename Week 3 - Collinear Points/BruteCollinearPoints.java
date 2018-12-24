@@ -1,57 +1,59 @@
 import java.util.Arrays;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BruteCollinearPoints {
    private final int count;
    private final LineSegment[] segments;
+   private Point[] points;
 
    public BruteCollinearPoints(Point[] points) {    // finds all line segments containing 4 points
    		if (points == null) {
-   			throw new IllegalArgumentException();
+   			throw new java.lang.IllegalArgumentException();
    		}
-   		Arrays.sort(points);
+      int len = points.length;
+      this.points = new Point[len];
 
-   		int len = points.length;
+      for (int i = 0; i < len; i++) {
+        if (points[i] == null) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        this.points[i] = points[i];
+      }
+
+   		Arrays.sort(this.points);
    		List<LineSegment> list = new ArrayList<LineSegment>();
 
    		for (int i = 0; i < len; i++) {
-   			Point p = points[i];	
-			for (int j = i + 1; j < len; j++) {
-   				double pq = p.slopeTo(points[j]);
-
+			  for (int j = i + 1; j < len; j++) {
    				for (int k = j + 1; k < len; k++) {
-   					double pr = p.slopeTo(points[k]);
-   					if(pq != pr) continue;
-
    					for (int l = k + 1; l < len; l++) {
-   						if(points[i] == null || points[j] == null ||
-   							points[k] == null || points[l] == null) {
-							throw new java.lang.IllegalArgumentException();
-						}
 
+              Point p = this.points[i];
+              double pq = p.slopeTo(this.points[j]);
+              double pr = p.slopeTo(this.points[k]);
+              double ps = p.slopeTo(this.points[l]);
 
-   						double ps = p.slopeTo(points[l]);
-   						if(pq != ps || pq != pr) continue;
+              if (pq ==  Double.NEGATIVE_INFINITY 
+                || pr ==  Double.NEGATIVE_INFINITY 
+                || ps ==  Double.NEGATIVE_INFINITY) {
+                throw new java.lang.IllegalArgumentException();
+              }
 
-   						if(pq ==  Double.NEGATIVE_INFINITY 
-   							|| pr ==  Double.NEGATIVE_INFINITY 
-   							|| ps ==  Double.NEGATIVE_INFINITY) {
-   							throw new java.lang.IllegalArgumentException();
-   						}
-   						
+              if (pq != pr || pq != ps || pq != pr) continue;
    						
    						if (pq == pr && pq == ps) {
-   							LineSegment newLine = new LineSegment(p, points[l]);
+   							LineSegment newLine = new LineSegment(p, this.points[l]);
 	        				boolean found = false;
 					        for (LineSegment line : list) {
 					          if (line.toString().equals(newLine.toString())) found = true;
 					        }
-							if (!found) {
-								list.add(newLine);
-							}
+							  if (!found) {
+								  list.add(newLine);
+							  }
    						}
    					}
    				}
@@ -59,7 +61,7 @@ public class BruteCollinearPoints {
    			
    		}	
    		int it = 0;
-		count = list.size();
+		  count = list.size();
    		segments = new LineSegment[count];
    		for (LineSegment l : list) {
    			segments[it++] = l;
@@ -86,7 +88,7 @@ public class BruteCollinearPoints {
     	    int y = in.readInt();
     	    points[i] = new Point(x, y);
     	}
-	
+	     
     	// draw the points
     	StdDraw.enableDoubleBuffering();
     	StdDraw.setXscale(0, 32768);
